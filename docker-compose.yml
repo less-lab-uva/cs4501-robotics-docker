@@ -1,10 +1,16 @@
 version: '3'
 services:
   ros:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_NAME: ${USER_NAME:-0}
+        USER_ID: ${USER_ID:-0}
+        GROUP_ID: ${GROUP_ID:-0}
     command: tail -f /dev/null
     volumes: 
-      - ./CS4501-Labs:/root/CS4501-Labs/
+      - ./CS4501-Labs:/home/${USER_NAME:-/../root/}/CS4501-Labs/
     environment:
       - DISPLAY=novnc:0.0
     networks:
@@ -13,7 +19,7 @@ services:
   novnc:  
     image: theasp/novnc:latest
     volumes: 
-      - ./CS4501-Labs:/root/CS4501-Labs/
+      - ./CS4501-Labs:/home/${USER_NAME:-/../root/}/CS4501-Labs/
     environment:
       - DISPLAY_WIDTH=800
       - DISPLAY_HEIGHT=600

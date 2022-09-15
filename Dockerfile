@@ -46,3 +46,20 @@ RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 
 #Setup python\r alias
 RUN ln /usr/bin/python $(printf "/usr/bin/python\r")
+
+ARG USER_ID
+ARG GROUP_ID
+ARG USER_NAME
+
+# Bridge user into Docker
+RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
+    userdel -f ${USER_NAME};\
+    if getent group ${USER_NAME} ; then groupdel ${USER_NAME}; fi &&\
+    groupadd -g ${GROUP_ID} ${USER_NAME} &&\
+    useradd -l -u ${USER_ID} -g ${USER_NAME} ${USER_NAME} &&\
+    install -d -m 0755 -o root -g ${USER_NAME} /${USER_NAME} \
+;fi
+
+USER ${USER_NAME:-root}
+
+WORKDIR /home/${USER_NAME:-/../root}
