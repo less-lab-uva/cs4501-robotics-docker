@@ -41,9 +41,6 @@ RUN rosdep init \
  && rosdep fix-permissions \
  && rosdep update
 
-# Source ROS
-RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
-
 #Setup python\r alias
 RUN ln /usr/bin/python $(printf "/usr/bin/python\r")
 
@@ -63,3 +60,6 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
 USER ${USER_NAME:-root}
 
 WORKDIR /home/${USER_NAME:-/../root}
+
+# Source ROS
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
