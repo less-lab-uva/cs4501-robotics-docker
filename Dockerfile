@@ -54,7 +54,12 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     if getent group ${USER_NAME} ; then groupdel ${USER_NAME}; fi &&\
     groupadd -g ${GROUP_ID} ${USER_NAME} &&\
     useradd -l -u ${USER_ID} -g ${USER_NAME} ${USER_NAME} &&\
-    install -d -m 0755 -o root -g ${USER_NAME} /${USER_NAME} \
+    # This part taken from https://unix.stackexchange.com/questions/56765/creating-a-user-without-a-password/472968#472968
+    # U6aMy0wojraho is the empty string hash
+    echo "${USER_NAME}:U6aMy0wojraho" | chpasswd -e &&\
+    # Give the added user sudo access https://stackoverflow.com/questions/25845538/how-to-use-sudo-inside-a-docker-container
+    adduser ${USER_NAME} sudo &&\
+    install -d -m 0755 -o ${USER_NAME} -g ${USER_NAME} /home/${USER_NAME} \
 ;fi
 
 USER ${USER_NAME:-root}
